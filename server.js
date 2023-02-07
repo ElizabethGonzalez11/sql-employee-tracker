@@ -1,15 +1,13 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql');
 
-
-
 // Connect to database
 const db = mysql.createConnection(
   {
   host: 'localhost',
-  port: 3001,
+  port: 3306,
   user: 'root',
-  password: '',
+  password: 'Abc123!!',
   database: 'employee_db',
   });
 
@@ -50,7 +48,7 @@ const db = mysql.createConnection(
         viewAllEmployees();
         break;
         
-      case 'Add department':
+      case 'Add a department':
         addDepartment();
         break;
 
@@ -58,7 +56,7 @@ const db = mysql.createConnection(
         addRole();
         break;
 
-      case 'Add employee':
+      case 'Add an employee':
         addEmployee();
         break;
 
@@ -85,7 +83,7 @@ function viewAllDepartments() {
 
 function viewAllRoles()  {
   console.log('Viewing all roles...\n');
-  db.query('SELECT * FROM role', function (err, res) {
+  db.query('SELECT * FROM employee_role', function (err, res) {
     if (err) throw err;
     console.table(res);
     promptUser();
@@ -105,28 +103,29 @@ function addDepartment() {
   inquirer.prompt([
     {
     name: 'department_name',
-    message: 'Enter department name',
+    message: "Enter department name:",
     type: 'input',
     }
   ])
   .then(function ({department_name}) {
-    db.query('INSERT INTO department SET ?', {
-      name: department_name
-    },
-    function (err, res) {
-      if (err) throw err;
-      console.log(`Successfully added ${department_name} into table`)
-      viewAllDepartments();
-      promptUser();
-    })
-  }) 
+    db.query('INSERT INTO department SET ?', 
+      {
+        name: department_name
+      },
+      function (err, res) {
+        if (err) throw err;
+        console.log(`Successfully added ${department_name} into table`)
+        viewAllDepartments();
+        promptUser();
+      })
+    }) 
 }
 
 function addRole () {
   inquirer.prompt([
     {
       type: 'input',
-      message: 'What is the role?',
+      message: 'Enter role title:',
       name: 'title',
     },
     {
@@ -135,9 +134,9 @@ function addRole () {
       name: 'salary',
     },
     { 
-      type: 'list',
+      type: 'input',
       message: 'What is the department ID?',
-      name: 'department',
+      name: 'department_id',
     }
   ])
   .then(function({title, salary, department_id}) {
@@ -191,7 +190,7 @@ function addEmployee () {
       function (err, res) {
         if (err) throw err;
         console.log(`Successfully added ${first_name} ${last_name} into the table`)
-        viewAllDepartments();
+        viewAllEmployees();
         promptUser();
       })
   })
